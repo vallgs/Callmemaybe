@@ -1,11 +1,13 @@
 from src import Small_LLM_Model
 from pydantic import ValidationError
-from models import PromptTest, FunctionDefinition, Parameter
+from models import FunctionDefinition
+from util import is_valide
 import json
 
 
 class GenerationEngine:
-    def __init__(self, model: Small_LLM_Model):
+    def __init__(self, model: Small_LLM_Model,
+                 function: list[FunctionDefinition]):
         self.model = model
         vocab_path = self.model.get_path_to_vocab_file()
 
@@ -29,6 +31,21 @@ class GenerationEngine:
         next_token_id = self.selected_best_token(constrained_logits)
 
         return next_token_id
-    
-    def get_mask_for_current(self, current_token_ids):
-        
+
+    def get_mask_for_current_states(self, current_token_ids):
+        current_token = "".join([self.id_to_token[tid]
+                                 for tid in current_token_ids])
+        mask = []
+        for token_id, token_text in self.id_to_token.items():
+            if is_valide(current_token, token_text, self.functions):
+                mask.append(0.0)
+            else:
+                mask.append(float('-inf'))
+        return mask
+
+    def apply_mask(self, logits: float[float],
+                   mask: list[float]) -> list[float]:
+        return [logit + mask_value for logit, mask_value in zip(logits, mask)]
+
+    def selected_best_token(self, constrained_logits: list[float]) -> int:
+        return constrained_logits.index(max(constrained_logits))
