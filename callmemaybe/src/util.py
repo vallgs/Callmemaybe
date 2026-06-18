@@ -4,22 +4,22 @@ from models import FunctionDefinition, Parameter
 def is_valide(current_text: str, candidate_token: str,
               function: list[FunctionDefinition]) -> bool:
     sequence = current_text + candidate_token
-    after = current_text.split('"name": "')[1]
 
-    if len(sequence) == 0 and sequence != "{":
+    if "{" not in sequence:
         return False
 
-    if not after:
-        return False
+    if "{" in sequence and '"name": "' not in sequence:
+        waiting = '{"name": "'
+        return waiting.startswith(sequence)
 
     if '"name": "' in sequence:
         prefix = sequence.split('"name": "')[1]
-        return any(f.name.startswith(prefix) for f in function)
-
-    if 
-
-    
-    
+        if '"' in prefix:
+            if '"parameters": {' not in sequence:
+                waiting = '", "parameters": {'
+                return waiting.startswith(prefix)
+        else:
+            return any(f.name.startswith(prefix) for f in function)
 
     return True
 
