@@ -34,11 +34,11 @@ class GenerationEngine:
         return next_token_id
 
     def get_mask_for_current_states(self, current_token_ids):
-        current_token = "".join([self.id_to_token[tid]
-                                 for tid in current_token_ids])
+        current_token = self.model.decode(current_token_ids)
         mask = []
-        for token_id, token_text in self.id_to_token.items():
-            if is_valide(current_token, token_text, self.functions):
+        for token_id in self.id_to_token:
+            decoded = self.model.decode([token_id])
+            if is_valide(current_token, decoded, self.functions):
                 mask.append(0.0)
             else:
                 mask.append(float('-inf'))
