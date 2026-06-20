@@ -1,7 +1,7 @@
-from src import Small_LLM_Model
+from src.llm_sdk.llm_sdk import Small_LLM_Model
 from pydantic import ValidationError
-from models import FunctionDefinition
-from util import is_valide
+from .models import FunctionDefinition
+from .util import is_valide
 import json
 
 
@@ -10,6 +10,7 @@ class GenerationEngine:
                  function: list[FunctionDefinition]):
         self.model = model
         vocab_path = self.model.get_path_to_vocab_file()
+        self.functions = function
 
         try:
             with open(vocab_path, "r", encoding="utf-8") as f:
@@ -43,7 +44,7 @@ class GenerationEngine:
                 mask.append(float('-inf'))
         return mask
 
-    def apply_mask(self, logits: float[float],
+    def apply_mask(self, logits: list[float],
                    mask: list[float]) -> list[float]:
         return [logit + mask_value for logit, mask_value in zip(logits, mask)]
 
