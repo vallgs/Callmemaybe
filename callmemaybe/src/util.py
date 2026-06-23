@@ -109,6 +109,8 @@ def _char_ok(inner: str, char: str, fn: FunctionDefinition) -> bool:
         if before_pair.endswith(':'):
             # Vient de fermer une valeur STRING → , ou }
             written = [p for p in fn.parameters if f'"{p}"' in inner]
+            if ',' in after_close:
+                return char in ('"', ' ')
             if char == '}':
                 return len(written) >= len(fn.parameters)
             if char == ',':

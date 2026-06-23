@@ -19,15 +19,20 @@ def main():
     functions_text = "\n".join(line)
     llm = Small_LLM_Model()
     engine = GenerationEngine(llm, functions)
+
     for t in tqdm(test, desc="Prompt generation"):
         print(f"\n→ {t.prompt}")
-        prompt_text = f"fonctio disponible:\n{functions_text}\n\nQuestion: {t.prompt}\nJSON:"
+        prompt_text = f"fonction disponible:\n{functions_text}\n\nQuestion: {t.prompt}\nJSON:"
         token_ids = llm.encode(prompt_text).tolist()[0]
+        res = {"prompt": t.prompt}
         brace_depth = 0
         seen_open = False
+        MAX_TOKENS = 100
+        tokens_genere = 0
         while True:
             next_id = engine.generate_step(token_ids)
             token_ids.append(next_id)
+            tokens_genere += 1
             generated = llm.decode([next_id])
             print(f"token: '{generated}'", end=" ", flush=True)
             for c in generated:
@@ -38,12 +43,22 @@ def main():
                     brace_depth -= 1
             if seen_open and brace_depth == 0:
                 break
+            if tokens_genere > MAX_TOKENS:
+                print("\nLimite de token atteinte")
+                break
         full_text = llm.decode(token_ids)
         json_text = full_text.split("JSON:")[1]
         print(f"\nJSON generer: {json_text}")
-        result = json.loads(json_text)
-        result["prompt"] = t.prompt
-        results.append(result)
+        try:
+            result = json.loads(json_text)
+            res.update(result)
+            fn = next((f for f in functions if f.name == result["name"]), None)
+            for r in result["parameters"]:
+                if fn.parameters[r].type == "number":
+                    result["parameters"][r] = float(result["parameters"][r])
+            results.append(res)
+        except json.JSONDecodeError as e:
+            print(f"\n JSON error '{t.prompt}': {e}")
 
     with open(args.output, "w", encoding="utf-8") as f:
         json.dump(results, f, indent=2)
