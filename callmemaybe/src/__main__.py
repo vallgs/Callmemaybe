@@ -14,7 +14,8 @@ def main():
     line = []
     results = []
     for f in functions:
-        params_str = ", ".join(f"{name}: {p.type}" for name, p in f.parameters.items())
+        params_str = ", ".join(f"{name}: {p.type}"
+                               for name, p in f.parameters.items())
         line.append(f"{f.name}({params_str}) - {f.description}")
     functions_text = "\n".join(line)
     llm = Small_LLM_Model()

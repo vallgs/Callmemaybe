@@ -1,9 +1,5 @@
 norme flake et mypy 
 
-rajouter lint et lint --strict dans makefile pour norme 
-
 rajouter gestion erreur si pas les droits sur des fichiers json
-
-verifier si functions_calling_result,json se cree automatiquement 
 
 verifier format exact du json sortie 
