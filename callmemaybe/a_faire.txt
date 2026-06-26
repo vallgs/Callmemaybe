@@ -3,3 +3,5 @@ norme flake et mypy
 rajouter gestion erreur si pas les droits sur des fichiers json
 
 verifier format exact du json sortie 
+
+moulinette du sujet de correction
