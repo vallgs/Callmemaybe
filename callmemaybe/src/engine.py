@@ -35,7 +35,9 @@ class GenerationEngine:
 
         return next_token_id
 
-    def get_mask_for_current_states(self, current_token_ids):
+    def get_mask_for_current_states(
+            self, current_token_ids: list[int]
+            ) -> list[float]:
         current_token = self.model.decode(current_token_ids)
         mask = []
         for token_id in self.id_to_token:

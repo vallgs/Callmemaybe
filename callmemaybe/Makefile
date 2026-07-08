@@ -1,5 +1,6 @@
 install:
 	uv sync
+	@echo "finish, you can launch bro"
 
 run:
 	uv run python -m src

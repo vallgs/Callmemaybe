@@ -6,7 +6,7 @@ from src.llm_sdk.llm_sdk import Small_LLM_Model
 from tqdm import tqdm
 
 
-def main():
+def main() -> None:
     args = argument()
     functions = read_function_definition(args.functions_definition)
     test = read_calling_tests(args.input)
@@ -23,7 +23,10 @@ def main():
 
     for t in tqdm(test, desc="Prompt generation"):
         print(f"\n→ {t.prompt}")
-        prompt_text = f"fonction disponible:\n{functions_text}\n\nQuestion: {t.prompt}\nJSON:"
+        prompt_text = (
+            f"fonction disponible:\n{functions_text}\n\n"
+            f"Question: {t.prompt}\nJSON:"
+        )
         token_ids = llm.encode(prompt_text).tolist()[0]
         res = {"prompt": t.prompt}
         brace_depth = 0
@@ -54,6 +57,8 @@ def main():
             result = json.loads(json_text)
             res.update(result)
             fn = next((f for f in functions if f.name == result["name"]), None)
+            if fn is None:
+                continue
             for r in result["parameters"]:
                 if fn.parameters[r].type == "number":
                     result["parameters"][r] = float(result["parameters"][r])

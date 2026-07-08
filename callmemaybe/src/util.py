@@ -37,11 +37,15 @@ def is_valide(current_text: str, candidate_token: str,
         return True
 
     # Params déjà fermé → seul } pour l'objet extérieur
-    if params_raw.count('{') > 0 and params_raw.count('{') == params_raw.count('}'):
+    if (
+        params_raw.count('{') > 0
+        and params_raw.count('{') == params_raw.count('}')
+    ):
         written = [p for p in fn.parameters if f'"{p}"' in params_raw]
         if len(written) < len(fn.parameters):
             return False
-        return all(c in '} ' for c in candidate_token) and '}' in candidate_token
+        return all(
+            c in '} ' for c in candidate_token) and '}' in candidate_token
 
     # { d'ouverture pas encore écrit → le candidate doit le fournir
     brace = params_raw.find('{')
@@ -150,7 +154,8 @@ def _char_ok(inner: str, char: str, fn: FunctionDefinition) -> bool:
                 digit_count = sum(c.isdigit() for c in v)
                 if digit_count >= 3:
                     return _char_terminate(char, inner, fn)
-                return char.isdigit() or char == '.' or _char_terminate(char, inner, fn)
+                return char.isdigit() or char == '.' or _char_terminate(
+                    char, inner, fn)
 
             # string : ne devrait pas arriver (géré par la branche "ouvrant")
             return char in ('"', ' ')
