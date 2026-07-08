@@ -16,6 +16,8 @@ class GenerationEngine:
             with open(vocab_path, "r", encoding="utf-8") as f:
                 self.vocab = json.load(f)
                 self.id_to_token = {v: k for k, v in self.vocab.items()}
+                self.decoded_tokens = {tid: self.model.decode([tid])
+                                       for tid in self.id_to_token}
 
         except OSError as e:
             print(f"{e}")
@@ -37,7 +39,7 @@ class GenerationEngine:
         current_token = self.model.decode(current_token_ids)
         mask = []
         for token_id in self.id_to_token:
-            decoded = self.model.decode([token_id])
+            decoded = self.decoded_tokens[token_id]
             if is_valide(current_token, decoded, self.functions):
                 mask.append(0.0)
             else:

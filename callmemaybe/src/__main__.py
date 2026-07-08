@@ -60,9 +60,11 @@ def main():
             results.append(res)
         except json.JSONDecodeError as e:
             print(f"\n JSON error '{t.prompt}': {e}")
-
-    with open(args.output, "w", encoding="utf-8") as f:
-        json.dump(results, f, indent=2)
+    try:
+        with open(args.output, "w", encoding="utf-8") as f:
+            json.dump(results, f, indent=2)
+    except json.JSONDecodeError as e:
+        print(f"\n JSON error '{t.prompt}': {e}")
 
 
 if __name__ == "__main__":

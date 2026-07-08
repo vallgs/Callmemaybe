@@ -1,6 +1,5 @@
 from pydantic import ValidationError
 from .models import PromptTest, FunctionDefinition
-from pathlib import Path
 import json
 
 

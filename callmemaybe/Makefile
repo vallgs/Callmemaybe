@@ -23,7 +23,9 @@ lint:
 			--check-untyped-defs \
 			--exclude=.venv \
 			--exclude=src/llm_sdk
+	@echo "norme ok"
 
 lint_strict:
 	-uv run flake8 . --exclude=.venv,src/llm_sdk
 	uv run mypy --strict .
+	@echo "norme strict ok"
