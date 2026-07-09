@@ -1,7 +1,7 @@
 from src.llm_sdk.llm_sdk import Small_LLM_Model
 from pydantic import ValidationError
-from models import FunctionDefinition
-from util import is_valide
+from .models import FunctionDefinition
+from .util import is_valide
 import json
 
 

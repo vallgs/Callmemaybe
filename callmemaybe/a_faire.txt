@@ -1,7 +1,3 @@
-norme flake et mypy 
-
-verifier format exact du json sortie 
-
 moulinette du sujet de correction : 9/11 
 
 mettre les exemple ou doc en an

@@ -8,6 +8,7 @@ dependencies = [
     "torch>=2.0.0",
     "transformers>=4.40.0",
     "huggingface-hub>=0.20.0",
+    "tqdm>=4.68.3",
 ]
 
 [build-system]
@@ -21,4 +22,5 @@ packages = ["src"]
 dev = [
     "flake8>=7.3.0",
     "mypy>=2.1.0",
+    "types-tqdm>=4.68.0.20260608",
 ]

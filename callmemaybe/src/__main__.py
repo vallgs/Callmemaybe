@@ -1,9 +1,9 @@
 import json
-from parsing.arg import argument
-from loader import read_calling_tests, read_function_definition
-from engine import GenerationEngine
+from src.parsing.arg import argument
+from .loader import read_calling_tests, read_function_definition
+from .engine import GenerationEngine
 from src.llm_sdk.llm_sdk import Small_LLM_Model
-import tqdm
+from tqdm import tqdm
 
 
 def main() -> None:
@@ -66,8 +66,8 @@ def main() -> None:
         except json.JSONDecodeError as e:
             print(f"\n JSON error '{t.prompt}': {e}")
     try:
-        with open(args.output, "w", encoding="utf-8") as f:
-            json.dump(results, f, indent=2)
+        with open(args.output, "w", encoding="utf-8") as a:
+            json.dump(results, a, indent=2)
     except json.JSONDecodeError as e:
         print(f"\n JSON error '{t.prompt}': {e}")
 

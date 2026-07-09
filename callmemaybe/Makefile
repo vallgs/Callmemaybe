@@ -28,7 +28,7 @@ lint:
 			--exclude=moulinette
 	@echo "norme ok"
 
-lint_strict:
+lint--strict:
 	-uv run flake8 . --exclude=.venv,src/llm_sdk,moulinette
 	uv run mypy --strict . \
 			--exclude=moulinette \

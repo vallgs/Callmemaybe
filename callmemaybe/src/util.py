@@ -1,4 +1,4 @@
-from models import FunctionDefinition, Parameter
+from .models import FunctionDefinition, Parameter
 
 
 def is_valide(current_text: str, candidate_token: str,
@@ -7,13 +7,13 @@ def is_valide(current_text: str, candidate_token: str,
         current_text = current_text.split("JSON:")[-1]
     seq = current_text + candidate_token
 
-    # ETAT 1 : construire {"name": "
+    # ETAT 1 : build {"name": "
     if '{"name": "' not in seq:
         return '{"name": "'.startswith(seq.lstrip())
 
     after_name = seq.split('{"name": "', 1)[1]
 
-    # ETAT 2 : écrire le nom de la fonction
+    # ETAT 2 : write function name
     if '"' not in after_name:
         return any(f.name.startswith(after_name) for f in function)
 
@@ -22,14 +22,14 @@ def is_valide(current_text: str, candidate_token: str,
     if fn is None:
         return False
 
-    # ETAT 3 : construire ", "parameters": {
+    # ETAT 3 : build ", "parameters": {
     rest_seq = '"' + after_name.split('"', 1)[1]
     if '", "parameters": {' not in rest_seq:
         return '", "parameters": {'.startswith(rest_seq)
 
     # ETAT 4 : extraire inner depuis current_text SEULEMENT (pas seq)
     # pour éviter le double-comptage du candidate dans _valide_params
-    params_raw = _params_depuis(current_text, fn_name)
+    params_raw = _params_extract(current_text, fn_name)
 
     if params_raw is None:
         # current_text n'a pas encore la section params
@@ -58,7 +58,7 @@ def is_valide(current_text: str, candidate_token: str,
     return _valide_params(inner, candidate_token, fn)
 
 
-def _params_depuis(text: str, fn_name: str) -> str | None:
+def _params_extract(text: str, fn_name: str) -> str | None:
     """Extraire la section params depuis text, ou None si pas encore présente.""" # noqa
     marker = f'{{"name": "{fn_name}"'
     if marker not in text:
