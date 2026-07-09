@@ -15,7 +15,9 @@ clean:
 	@echo "clean ok"
 
 lint:
-	-uv run flake8 . --exclude=.venv,src/llm_sdk
+	-uv run flake8 . \
+	--exclude=.venv,src/llm_sdk \
+	--exclude=moulinette
 	uv run mypy . \
 			--warn-return-any \
 			--warn-unused-ignores \
@@ -23,10 +25,13 @@ lint:
 			--disallow-untyped-defs \
 			--check-untyped-defs \
 			--exclude=.venv \
-			--exclude=src/llm_sdk
+			--exclude=src/llm_sdk \
+			--exclude=moulinette
 	@echo "norme ok"
 
 lint_strict:
-	-uv run flake8 . --exclude=.venv,src/llm_sdk
-	uv run mypy --strict .
+	-uv run flake8 . --exclude=.venv,src/llm_sdk\
+					--exclude=moulinette
+	uv run mypy --strict . \
+		--excluce=moulinette
 	@echo "norme strict ok"
