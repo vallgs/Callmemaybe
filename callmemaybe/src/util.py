@@ -1,4 +1,4 @@
-from .models import FunctionDefinition, Parameter
+from models import FunctionDefinition, Parameter
 
 
 def is_valide(current_text: str, candidate_token: str,
@@ -59,7 +59,7 @@ def is_valide(current_text: str, candidate_token: str,
 
 
 def _params_depuis(text: str, fn_name: str) -> str | None:
-    """Extraire la section params depuis text, ou None si pas encore présente."""
+    """Extraire la section params depuis text, ou None si pas encore présente.""" # noqa
     marker = f'{{"name": "{fn_name}"'
     if marker not in text:
         return None
@@ -72,7 +72,7 @@ def _params_depuis(text: str, fn_name: str) -> str | None:
 
 
 def _valide_params(inner: str, candidate: str, fn: FunctionDefinition) -> bool:
-    """Valide le candidate caractère par caractère pour éviter les sauts d'états."""
+    """Valide le candidate caractère par caractère pour éviter les sauts d'états.""" # noqa
     current = inner
     for char in candidate:
         if not _char_ok(current, char, fn):
@@ -101,7 +101,7 @@ def _char_ok(inner: str, char: str, fn: FunctionDefinition) -> bool:
         else:
             # À l'intérieur d'un nom de clé
             if char == '"':
-                return after in fn.parameters  # fermer seulement si clé complète
+                return after in fn.parameters  # fermer si clé complète
             return any(k.startswith(after + char) for k in fn.parameters)
     else:
         # Dernier " est FERMANT

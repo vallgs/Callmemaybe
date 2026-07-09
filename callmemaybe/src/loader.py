@@ -1,5 +1,5 @@
 from pydantic import ValidationError
-from .models import PromptTest, FunctionDefinition
+from models import PromptTest, FunctionDefinition
 import json
 
 

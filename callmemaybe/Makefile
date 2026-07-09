@@ -16,8 +16,7 @@ clean:
 
 lint:
 	-uv run flake8 . \
-	--exclude=.venv,src/llm_sdk \
-	--exclude=moulinette
+	--exclude=.venv,src/llm_sdk,moulinette
 	uv run mypy . \
 			--warn-return-any \
 			--warn-unused-ignores \
@@ -30,8 +29,8 @@ lint:
 	@echo "norme ok"
 
 lint_strict:
-	-uv run flake8 . --exclude=.venv,src/llm_sdk\
-					--exclude=moulinette
+	-uv run flake8 . --exclude=.venv,src/llm_sdk,moulinette
 	uv run mypy --strict . \
-		--excluce=moulinette
+			--exclude=moulinette \
+			--exclude=src/llm_sdk
 	@echo "norme strict ok"

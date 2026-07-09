@@ -1,9 +1,9 @@
 import json
-from .parsing.arg import argument
-from .loader import read_calling_tests, read_function_definition
-from .engine import GenerationEngine
+from parsing.arg import argument
+from loader import read_calling_tests, read_function_definition
+from engine import GenerationEngine
 from src.llm_sdk.llm_sdk import Small_LLM_Model
-from tqdm import tqdm
+import tqdm
 
 
 def main() -> None:
