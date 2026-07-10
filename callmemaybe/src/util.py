@@ -7,13 +7,13 @@ def is_valide(current_text: str, candidate_token: str,
         current_text = current_text.split("JSON:")[-1]
     seq = current_text + candidate_token
 
-    # ETAT 1 : build {"name": "
+    # STATE 1: build {"name": "
     if '{"name": "' not in seq:
         return '{"name": "'.startswith(seq.lstrip())
 
     after_name = seq.split('{"name": "', 1)[1]
 
-    # ETAT 2 : write function name
+    # STATE 2: write function name
     if '"' not in after_name:
         return any(f.name.startswith(after_name) for f in function)
 
@@ -22,21 +22,21 @@ def is_valide(current_text: str, candidate_token: str,
     if fn is None:
         return False
 
-    # ETAT 3 : build ", "parameters": {
+    # STATE 3: build ", "parameters": {
     rest_seq = '"' + after_name.split('"', 1)[1]
     if '", "parameters": {' not in rest_seq:
         return '", "parameters": {'.startswith(rest_seq)
 
-    # ETAT 4 : extraire inner depuis current_text SEULEMENT (pas seq)
-    # pour éviter le double-comptage du candidate dans _valide_params
+    # STATE 4: extract inner from current_text ONLY (not seq)
+    # to avoid double-counting the candidate in _valide_params
     params_raw = _params_extract(current_text, fn_name)
 
     if params_raw is None:
-        # current_text n'a pas encore la section params
-        # le candidate complète la transition (déjà validé via seq ci-dessus)
+        # current_text does not yet have the params section
+        # the candidate completes the transition
         return True
 
-    # Params déjà fermé → seul } pour l'objet extérieur
+    # Params already closed → only } for the outer object
     if (
         params_raw.count('{') > 0
         and params_raw.count('{') == params_raw.count('}')
@@ -47,19 +47,19 @@ def is_valide(current_text: str, candidate_token: str,
         return all(
             c in '} ' for c in candidate_token) and '}' in candidate_token
 
-    # { d'ouverture pas encore écrit → le candidate doit le fournir
+    # Opening { not yet written → the candidate must provide it
     brace = params_raw.find('{')
     if brace == -1:
         return '{' in candidate_token or not candidate_token.strip()
 
     inner = params_raw[brace + 1:]
 
-    # Valider le candidate caractère par caractère contre l'état courant
+    # Validate the candidate character by character against the current state
     return _valide_params(inner, candidate_token, fn)
 
 
 def _params_extract(text: str, fn_name: str) -> str | None:
-    """Extraire la section params depuis text, ou None si pas encore présente.""" # noqa
+    """Extract the params section from text, or None if not yet present.""" # noqa
     marker = f'{{"name": "{fn_name}"'
     if marker not in text:
         return None
@@ -72,7 +72,7 @@ def _params_extract(text: str, fn_name: str) -> str | None:
 
 
 def _valide_params(inner: str, candidate: str, fn: FunctionDefinition) -> bool:
-    """Valide le candidate caractère par caractère pour éviter les sauts d'états.""" # noqa
+    """Validate the candidate character by character to avoid state jumps.""" # noqa
     current = inner
     for char in candidate:
         if not _char_ok(current, char, fn):
@@ -82,11 +82,11 @@ def _valide_params(inner: str, candidate: str, fn: FunctionDefinition) -> bool:
 
 
 def _char_ok(inner: str, char: str, fn: FunctionDefinition) -> bool:
-    """Vérifie si char est valide comme prochain caractère dans les params."""
+    """Check whether char is valid as the next character within the params."""
     last_q = inner.rfind('"')
 
     if last_q == -1:
-        # Aucun guillemet → attendre " ou espace
+        # No quote yet → wait for " or space
         return char in ('"', ' ')
 
     before = inner[:last_q]
@@ -94,24 +94,24 @@ def _char_ok(inner: str, char: str, fn: FunctionDefinition) -> bool:
     n_before = before.count('"')
 
     if n_before % 2 == 0:
-        # Dernier " est OUVRANT
+        # Last " is OPENING
         if before.rstrip().endswith(':'):
-            # À l'intérieur d'une valeur string : tout caractère est valide
+            # Inside a string value: any character is valid
             return True
         else:
-            # À l'intérieur d'un nom de clé
+            # Inside a key name
             if char == '"':
-                return after in fn.parameters  # fermer si clé complète
+                return after in fn.parameters  # close if the key is complete
             return any(k.startswith(after + char) for k in fn.parameters)
     else:
-        # Dernier " est FERMANT
+        # Last " is CLOSING
         prev_q = inner.rfind('"', 0, last_q)
         closed = inner[prev_q + 1:last_q] if prev_q != -1 else ''
         before_pair = (inner[:prev_q] if prev_q != -1 else '').rstrip()
         after_close = after
 
         if before_pair.endswith(':'):
-            # Vient de fermer une valeur STRING → , ou }
+            # Just closed a STRING value → , or }
             written = [p for p in fn.parameters if f'"{p}"' in inner]
             if ',' in after_close:
                 return char in ('"', ' ')
@@ -121,7 +121,7 @@ def _char_ok(inner: str, char: str, fn: FunctionDefinition) -> bool:
                 return len(written) < len(fn.parameters)
             return char == ' '
         else:
-            # Vient de fermer un nom de CLÉ → attendre : puis valeur
+            # Just closed a KEY name → wait for : then value
             key = closed
             if key not in fn.parameters:
                 return False
@@ -137,14 +137,14 @@ def _char_ok(inner: str, char: str, fn: FunctionDefinition) -> bool:
             v = value_str.strip()
 
             if not v:
-                # Juste après : → début de valeur
+                # Right after : → start of value
                 if ptype == 'number':
                     return char.isdigit() or char in ('-', ' ')
                 return char in ('"', ' ')
 
             if ptype == 'number':
                 if ',' in v:
-                    # Virgule déjà écrite → prochain param
+                    # Comma already written → next param
                     return char in ('"', ' ')
                 if '.' in v:
                     after_dot = v.split('.', 1)[1]
@@ -157,12 +157,12 @@ def _char_ok(inner: str, char: str, fn: FunctionDefinition) -> bool:
                 return char.isdigit() or char == '.' or _char_terminate(
                     char, inner, fn)
 
-            # string : ne devrait pas arriver (géré par la branche "ouvrant")
+            # string: should not happen (handled by the "opening" branch)
             return char in ('"', ' ')
 
 
 def _char_terminate(char: str, inner: str, fn: FunctionDefinition) -> bool:
-    """Vérifie si char peut terminer une valeur numérique."""
+    """Check whether char can terminate a numeric value."""
     written = [p for p in fn.parameters if f'"{p}"' in inner]
     if char == '}':
         return len(written) >= len(fn.parameters)

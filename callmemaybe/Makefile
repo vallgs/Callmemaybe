@@ -16,21 +16,17 @@ clean:
 
 lint:
 	-uv run flake8 . \
-	--exclude=.venv,src/llm_sdk,moulinette
-	uv run mypy . \
+	--exclude=.venv,llm_sdk,moulinette
+	uv run mypy src \
 			--warn-return-any \
 			--warn-unused-ignores \
 			--ignore-missing-imports \
 			--disallow-untyped-defs \
 			--check-untyped-defs \
-			--exclude=.venv \
-			--exclude=src/llm_sdk \
-			--exclude=moulinette
+			--no-namespace-packages
 	@echo "norme ok"
 
-lint--strict:
-	-uv run flake8 . --exclude=.venv,src/llm_sdk,moulinette
-	uv run mypy --strict . \
-			--exclude=moulinette \
-			--exclude=src/llm_sdk
+lint-strict:
+	-uv run flake8 . --exclude=.venv,llm_sdk,moulinette
+	uv run mypy --strict src --no-namespace-packages
 	@echo "norme strict ok"

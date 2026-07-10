@@ -2,7 +2,7 @@ import json
 from src.parsing.arg import argument
 from .loader import read_calling_tests, read_function_definition
 from .engine import GenerationEngine
-from src.llm_sdk.llm_sdk import Small_LLM_Model
+from llm_sdk import Small_LLM_Model
 from tqdm import tqdm
 
 
@@ -68,7 +68,7 @@ def main() -> None:
     try:
         with open(args.output, "w", encoding="utf-8") as a:
             json.dump(results, a, indent=2)
-    except json.JSONDecodeError as e:
+    except (json.JSONDecodeError, OSError) as e:
         print(f"\n JSON error '{t.prompt}': {e}")
 
 

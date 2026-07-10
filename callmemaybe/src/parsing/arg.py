@@ -10,18 +10,18 @@ def argument() -> Namespace:
         "--input",
         default="data/input/function_calling_tests.json",
         type=str,
-        help="fichier de prompts"
+        help="prompts file"
     )
     parser.add_argument(
         "--output",
-        default="data/output/function_calling_result.json",
+        default="data/output/function_calling_results.json",
         type=str,
-        help="fichier avec les reponses"
+        help="file with the answers"
     )
     parser.add_argument(
         "--functions_definition",
         default="data/input/functions_definition.json",
         type=str,
-        help="fichier avec les def des fonctions"
+        help="file with the function definitions"
     )
     return parser.parse_args()

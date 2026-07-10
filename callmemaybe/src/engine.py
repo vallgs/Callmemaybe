@@ -1,4 +1,4 @@
-from src.llm_sdk.llm_sdk import Small_LLM_Model
+from llm_sdk import Small_LLM_Model
 from pydantic import ValidationError
 from .models import FunctionDefinition
 from .util import is_valide
@@ -19,9 +19,7 @@ class GenerationEngine:
                 self.decoded_tokens = {tid: self.model.decode([tid])
                                        for tid in self.id_to_token}
 
-        except OSError as e:
-            print(f"{e}")
-        except ValidationError as e:
+        except (json.JSONDecodeError, ValidationError, OSError) as e:
             print(f"{e}")
 
     def generate_step(self, current_token_ids: list[int]) -> int:
