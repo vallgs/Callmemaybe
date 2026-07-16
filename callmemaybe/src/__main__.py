@@ -4,6 +4,7 @@ from .loader import read_calling_tests, read_function_definition
 from .engine import GenerationEngine
 from llm_sdk import Small_LLM_Model
 from tqdm import tqdm
+import os
 
 
 def main() -> None:
@@ -65,6 +66,11 @@ def main() -> None:
             results.append(res)
         except json.JSONDecodeError as e:
             print(f"\n JSON error '{t.prompt}': {e}")
+    output_folder = os.path.dirname(args.output)
+    try:
+        os.makedirs(output_folder, 0o777, True)
+    except (OSError) as e:
+        print(f"{e}")
     try:
         with open(args.output, "w", encoding="utf-8") as a:
             json.dump(results, a, indent=2)
