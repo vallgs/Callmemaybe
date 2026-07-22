@@ -138,23 +138,22 @@ def _char_ok(inner: str, char: str, fn: FunctionDefinition) -> bool:
 
             if not v:
                 # Right after : → start of value
-                if ptype == 'number':
+                if _is_numeric_type(ptype):
                     return char.isdigit() or char in ('-', ' ')
                 return char in ('"', ' ')
 
-            if ptype == 'number':
+            if _is_numeric_type(ptype):
                 if ',' in v:
                     # Comma already written → next param
                     return char in ('"', ' ')
                 if '.' in v:
                     after_dot = v.split('.', 1)[1]
-                    if after_dot:
-                        return _char_terminate(char, inner, fn)
-                    return char.isdigit()
-                digit_count = sum(c.isdigit() for c in v)
-                if digit_count >= 3:
-                    return _char_terminate(char, inner, fn)
-                return char.isdigit() or char == '.' or _char_terminate(
+                    if not after_dot:
+                        return char.isdigit()
+                    return char.isdigit() or _char_terminate(
+                        char, inner, fn)
+                allow_dot = char == '.' and ptype == 'number'
+                return char.isdigit() or allow_dot or _char_terminate(
                     char, inner, fn)
 
             # string: should not happen (handled by the "opening" branch)
@@ -169,6 +168,10 @@ def _char_terminate(char: str, inner: str, fn: FunctionDefinition) -> bool:
     if char == ',':
         return len(written) < len(fn.parameters)
     return char == ' '
+
+
+def _is_numeric_type(ptype: str) -> bool:
+    return ptype in ('number', 'integer')
 
 
 def get_allowed_tokens_for_parameter(

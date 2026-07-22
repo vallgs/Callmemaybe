@@ -58,14 +58,18 @@ def main() -> None:
             result = json.loads(json_text)
             res.update(result)
             fn = next((f for f in functions if f.name == result["name"]), None)
-            if fn is None:
-                continue
-            for r in result["parameters"]:
-                if fn.parameters[r].type == "number":
-                    result["parameters"][r] = float(result["parameters"][r])
-            results.append(res)
+            if fn is not None:
+                params = result["parameters"]
+                for r in params:
+                    if fn.parameters[r].type == "number":
+                        params[r] = float(params[r])
+                    elif fn.parameters[r].type == "integer":
+                        params[r] = int(params[r])
         except json.JSONDecodeError as e:
             print(f"\n JSON error '{t.prompt}': {e}")
+        except (KeyError, ValueError, TypeError) as e:
+            print(f"\n Malformed function call for '{t.prompt}': {e}")
+        results.append(res)
     output_folder = os.path.dirname(args.output)
     try:
         os.makedirs(output_folder, 0o777, True)
